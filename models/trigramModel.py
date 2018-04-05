@@ -14,7 +14,26 @@ class TrigramModel(NGramModel):
                   where those inner dictionaries have strings as keys
                   and dictionaries of {string: integer} pairs as values.
         """
-        pass
+        
+        for each_row in text:
+            counter = 2
+            len_row = len(each_row)
+            while counter < len_row:
+                print(each_row[counter])
+                unigram_3 = each_row[counter]
+                unigram_2 = each_row[counter - 1]
+                unigram_1 = each_row[counter - 2]
+                if unigram_1 in self.nGramCounts:
+                    if unigram_2 in self.nGramCounts[unigram_1]:
+                        if unigram_3 in self.nGramCounts[unigram_1][unigram_2]:
+                            self.nGramCounts[unigram_1][unigram_2][unigram_3] += 1
+                        else:
+                            self.nGramCounts[unigram_1][unigram_2][unigram_3] = 1
+                    else:
+                        self.nGramCounts[unigram_1][unigram_2] = {unigram_3: 1}
+                else:
+                    self.nGramCounts[unigram_1] = {unigram_2 : {unigram_3: 1}}
+                counter += 1
 
     def trainingDataHasNGram(self, sentence):
         """
@@ -24,7 +43,14 @@ class TrigramModel(NGramModel):
                   the next token for the sentence. For explanations of how this
                   is determined for the TrigramModel, see the spec.
         """
-        pass
+        last_word = sentence[-1]
+        penultimate = sentence[-2]
+        
+        if penultimate in self.nGramCounts
+            if last_word in self.nGramCounts[penultimate]:
+                return True
+        else: 
+            return False
 
     def getCandidateDictionary(self, sentence):
         """
@@ -35,8 +61,10 @@ class TrigramModel(NGramModel):
                   to the current sentence. For details on which words the
                   TrigramModel sees as candidates, see the spec.
         """
-        pass
-
+        last_word = sentence[-1]
+        penultimate = sentence[-2]
+        
+        return self.nGramCounts[penultimate][last_word]
 
 ###############################################################################
 # Main

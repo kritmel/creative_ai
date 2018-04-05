@@ -14,24 +14,35 @@ class BigramModel(NGramModel):
                   which has strings as keys and dictionaries of
                   {string: integer} pairs as values.
         """
-        len_text = len(text)
-        i = 0
-        while i > len_text:
-            if i > 0:
-                if text[i - 1] in self.nGramCounts:
-                    self.nGramCounts[word] += 1
-            if word in self.nGramCounts:
-                self.nGramCounts[word] += 1
-            elif (word != "^::^") or (word != "^:::^"):
-                self.nGramCounts[word] = 1
 
-        for sentence in text:
-            for word in sentence:
-                if word in self.nGramCounts:
-                    self.nGramCounts[word] += 1
-                elif (word != "^::^") or (word != "^:::^"):
-                    self.nGramCounts[word] = 1
-
+        # print(type(text))
+        # print("text is: {}".format(text[0]))
+        # print("text type is: {}".format(type(text)))
+        # print("text type is: {}".format(type(text[0])))
+        i = 1
+        
+        for each_row in text:
+            # print(each_row[1])
+            # print(each_row[0])
+            counter = 1
+            len_row = len(each_row)
+            while counter < len_row:
+                # print(each_row[counter])
+                unigram_2 = each_row[counter]
+                unigram_1 = each_row[counter - 1]
+                if unigram_1 in self.nGramCounts:
+                    if unigram_2 in self.nGramCounts[unigram_1]:
+                        self.nGramCounts[unigram_1][unigram_2] += 1
+                    else:
+                        self.nGramCounts[unigram_1][unigram_2] = 1
+                else:
+                    self.nGramCounts[unigram_1] = {unigram_2 : 1}
+                counter += 1
+        
+        # previous_token = text[each_row][i - 1]
+        # current_token = text[0][i]
+        
+        
 
     def trainingDataHasNGram(self, sentence):
         """
@@ -41,8 +52,13 @@ class BigramModel(NGramModel):
                   the next token for the sentence. For explanations of how this
                   is determined for the BigramModel, see the spec.
         """
-        pass
-
+        last_word = sentence[-1]
+        
+        if last_word in self.nGramCounts:
+            return True
+        else: 
+            return False
+        
     def getCandidateDictionary(self, sentence):
         """
         Requires: sentence is a list of strings, and trainingDataHasNGram
@@ -52,7 +68,8 @@ class BigramModel(NGramModel):
                   to the current sentence. For details on which words the
                   BigramModel sees as candidates, see the spec.
         """
-        pass
+        last_word = sentence[-1]
+        return self.nGramCounts[last_word]
 
 ###############################################################################
 # Main
@@ -60,4 +77,14 @@ class BigramModel(NGramModel):
 
 if __name__ == '__main__':
     # Add your test cases here
-    pass
+    DEBUG = 1
+    
+    if DEBUG == 1:
+        text_1 = [["the"], ["quick"], ["brown"], ["fox"], ["jumped"], ["over"], ["the"], ["wall"]]
+        text = ["hello world"]
+        test_bigram = BigramModel()
+        test_bigram.trainModel(text)
+        print(test_bigram.nGramCounts)
+        
+    else:
+        pass
