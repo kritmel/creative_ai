@@ -16,8 +16,11 @@ class UnigramModel(NGramModel):
             for word in sentence:
                 if word in self.nGramCounts:
                     self.nGramCounts[word] += 1
-                elif (word != "^::^") or (word != "^:::^"):
+                else:
                     self.nGramCounts[word] = 1
+        
+        del self.nGramCounts["^::^"]
+        del self.nGramCounts["^:::^"]
 
     def trainingDataHasNGram(self, sentence):
         """

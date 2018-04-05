@@ -14,7 +14,24 @@ class BigramModel(NGramModel):
                   which has strings as keys and dictionaries of
                   {string: integer} pairs as values.
         """
-        pass
+        len_text = len(text)
+        i = 0
+        while i > len_text:
+            if i > 0:
+                if text[i - 1] in self.nGramCounts:
+                    self.nGramCounts[word] += 1
+            if word in self.nGramCounts:
+                self.nGramCounts[word] += 1
+            elif (word != "^::^") or (word != "^:::^"):
+                self.nGramCounts[word] = 1
+
+        for sentence in text:
+            for word in sentence:
+                if word in self.nGramCounts:
+                    self.nGramCounts[word] += 1
+                elif (word != "^::^") or (word != "^:::^"):
+                    self.nGramCounts[word] = 1
+
 
     def trainingDataHasNGram(self, sentence):
         """
