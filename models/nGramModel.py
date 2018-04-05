@@ -136,7 +136,7 @@ class NGramModel(object):
         
         # Walk through the allCandidates dictionary and examine each key
         for i in allCandidates:
-            if i[0][0] is in possiblePitches:
+            if i[0][:-1] in possiblePitches:
                 constrainedCandidates[i] = allCandidates[i]
             elif i == "$:::$" :
                 constrainedCandidates[i] = allCandidates[i]

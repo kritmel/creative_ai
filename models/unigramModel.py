@@ -16,7 +16,7 @@ class UnigramModel(NGramModel):
             for word in sentence:
                 if word in self.nGramCounts:
                     self.nGramCounts[word] += 1
-                else:
+                elif (word != "^::^") or (word != "^:::^"):
                     self.nGramCounts[word] = 1
 
     def trainingDataHasNGram(self, sentence):
@@ -27,6 +27,9 @@ class UnigramModel(NGramModel):
                   the next token for the sentence. For explanations of how this
                   is determined for the UnigramModel, see the spec.
         """
+        
+        if len(self.nGramCounts) < 1:
+            return False
         return True
 
     def getCandidateDictionary(self, sentence):
@@ -38,7 +41,7 @@ class UnigramModel(NGramModel):
                   to the current sentence. For details on which words the
                   UnigramModel sees as candidates, see the spec.
         """
-        pass
+        return self.nGramCounts
 
 ###############################################################################
 # Main
@@ -52,16 +55,20 @@ if __name__ == '__main__':
     text = [ [ 'brown' ] ]
     uni.trainModel(text)
     # Should print: { 'brown' : 1 }
+    print("Should print: { 'brown' : 1 }")
     print(uni)
 
     text = [ ['the', 'brown', 'fox'], ['the', 'lazy', 'dog'] ]
     uni.trainModel(text)
     # Should print: { 'brown': 2, 'dog': 1, 'fox': 1, 'lazy': 1, 'the': 2 }
+    print("Should print: { 'brown': 2, 'dog': 1, 'fox': 1, 'lazy': 1, 'the': 2 }")
     print(uni)
 
     # An example trainingDataHasNGram test case
     uni = UnigramModel()
     sentence = "Eagles fly in the sky"
+    print("Should be false")
     print(uni.trainingDataHasNGram(sentence)) # should be False
     uni.trainModel(text)
+    print("should be true")
     print(uni.trainingDataHasNGram(sentence)) # should be True
