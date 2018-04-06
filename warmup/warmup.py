@@ -204,11 +204,12 @@ def keysIn2D(D, L1, L2):
     True
     """
     last_l1 = L1[-1]
-    print(last_l1)
+    # print(last_l1)
     last_l2 = L2[-1]
-    print(last_l2)
-    if last_l2 in D[last_l1]:
-        return True
+    # print(last_l2)
+    if last_l1 in D:
+        if last_l2 in D[last_l1]:
+            return True
     else: return False
     
 

@@ -19,7 +19,7 @@ class TrigramModel(NGramModel):
             counter = 2
             len_row = len(each_row)
             while counter < len_row:
-                print(each_row[counter])
+                # print(each_row[counter])
                 unigram_3 = each_row[counter]
                 unigram_2 = each_row[counter - 1]
                 unigram_1 = each_row[counter - 2]
@@ -46,7 +46,7 @@ class TrigramModel(NGramModel):
         last_word = sentence[-1]
         penultimate = sentence[-2]
         
-        if penultimate in self.nGramCounts
+        if penultimate in self.nGramCounts:
             if last_word in self.nGramCounts[penultimate]:
                 return True
         else: 
@@ -72,4 +72,23 @@ class TrigramModel(NGramModel):
 
 if __name__ == '__main__':
     # Add your test cases here
-    pass
+    # An example trainModel test case
+    elvis_lyrics = "Wise men say only fools rush in"
+    elvis_chorus = "But I can't help falling in love with you"
+    elvis_lyric_lst = elvis_lyrics.split(' ')
+    elvis_chorus_lst = elvis_chorus.split(' ')
+    elvis = [elvis_lyric_lst, elvis_chorus_lst]
+    print(elvis)
+    
+    tri = TrigramModel()
+    #text = [ ['the', 'quick', 'brown', 'fox'], ['jumped', 'over', 'the', 'quick'] ]
+    tri.trainModel(elvis)
+    print("Should print the counts of all the trigrams, with 'the quick' happening twice")
+    print(tri)
+    
+    tri = TrigramModel()
+    sentence = ['The','sly','brown']
+    print("Should be false\n{}".format(bigram.trainingDataHasNGram(sentence))) # should be False cuz nothing inside
+    bigram.trainModel(text)
+    print("should be true\n{}".format(bigram.trainingDataHasNGram(sentence)))
+    print("")

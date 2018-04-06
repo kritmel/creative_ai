@@ -19,8 +19,10 @@ class UnigramModel(NGramModel):
                 else:
                     self.nGramCounts[word] = 1
         
-        del self.nGramCounts["^::^"]
-        del self.nGramCounts["^:::^"]
+        if "^::^" in self.nGramCounts:
+            del self.nGramCounts["^::^"]
+        if "^:::^" in self.nGramCounts:
+            del self.nGramCounts["^:::^"]
 
     def trainingDataHasNGram(self, sentence):
         """
@@ -66,6 +68,7 @@ if __name__ == '__main__':
     # Should print: { 'brown': 2, 'dog': 1, 'fox': 1, 'lazy': 1, 'the': 2 }
     print("Should print: { 'brown': 2, 'dog': 1, 'fox': 1, 'lazy': 1, 'the': 2 }")
     print(uni)
+    print()
 
     # An example trainingDataHasNGram test case
     uni = UnigramModel()
@@ -75,3 +78,10 @@ if __name__ == '__main__':
     uni.trainModel(text)
     print("should be true")
     print(uni.trainingDataHasNGram(sentence)) # should be True
+    print()
+    
+    uni = UnigramModel()
+    uni.trainModel(text)
+    
+    print("This should just print out the dictionary of words and counts.\n{}" \
+    .format(uni.getCandidateDictionary(sentence)))

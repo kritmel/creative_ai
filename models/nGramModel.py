@@ -117,7 +117,7 @@ class NGramModel(object):
                   For more information on how to put all these functions
                   together, see the spec.
         """
-        return weightedChoice(getCandidateDictionary(sentence))
+        return self.weightedChoice(self.getCandidateDictionary(sentence))
 
     def getNextNote(self, musicalSentence, possiblePitches):
         """
@@ -131,7 +131,7 @@ class NGramModel(object):
                   For details on how to do this and how this will differ
                   from getNextToken, see the spec.
         """
-        allCandidates = getCandidateDictionary(musicalSentence)
+        allCandidates = self.getCandidateDictionary(musicalSentence)
         constrainedCandidates = {}
         
         # Walk through the allCandidates dictionary and examine each key
@@ -142,7 +142,7 @@ class NGramModel(object):
                 constrainedCandidates[i] = allCandidates[i]
         
         if constrainedCandidates != {}:
-            return weightedChoice(constrainedCandidates)
+            return self.weightedChoice(constrainedCandidates)
         else:
             note = str(random.choice(possiblePitches)) + '4'
             duration = random.choice(NOTE_DURATIONS)
@@ -154,7 +154,16 @@ class NGramModel(object):
 
 if __name__ == '__main__':
     # Add your tests here
-    text = [ ['the', 'quick', 'brown', 'fox'], ['the', 'lazy', 'dog'] ]
-    choices = { 'the': 2, 'quick': 1, 'brown': 1 }
-    nGramModel = NGramModel()
-    print(nGramModel)
+    nmodel = NGramModel()
+    candidates = {'north': 4, 'south': 1, 'east': 3, 'west': 2}
+    can = {'heads': 50, 'tails': 50}
+    loaded_can = {'heads': 75, 'tails': 25}
+    
+    print("should print about equal numbers of h and t")
+    for i in range(0,10):
+        print(nmodel.weightedChoice(can))
+    print()
+    print("should print more h than t")
+    for i in range(0,10):
+        print(nmodel.weightedChoice(loaded_can))
+        

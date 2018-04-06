@@ -41,8 +41,6 @@ class BigramModel(NGramModel):
         
         # previous_token = text[each_row][i - 1]
         # current_token = text[0][i]
-        
-        
 
     def trainingDataHasNGram(self, sentence):
         """
@@ -77,14 +75,24 @@ class BigramModel(NGramModel):
 
 if __name__ == '__main__':
     # Add your test cases here
-    DEBUG = 1
+
+    # An example trainModel test case
+    bigram = BigramModel()
+    text = [ ['the', 'quick', 'brown', 'fox'], ['jumped', 'over', 'the', 'quick'] ]
+    bigram.trainModel(text)
+    print("Should print the counts of all the bigrams, with 'the quick' happening twice")
+    print(bigram)
+
+    # An example trainingDataHasNGram test case
+    bigram = BigramModel()
+    sentence = ['The','sly','brown']
+    print("Should be false\n{}".format(bigram.trainingDataHasNGram(sentence))) # should be False cuz nothing inside
+    bigram.trainModel(text)
+    print("should be true\n{}".format(bigram.trainingDataHasNGram(sentence)))
+    print("")
     
-    if DEBUG == 1:
-        text_1 = [["the"], ["quick"], ["brown"], ["fox"], ["jumped"], ["over"], ["the"], ["wall"]]
-        text = ["hello world"]
-        test_bigram = BigramModel()
-        test_bigram.trainModel(text)
-        print(test_bigram.nGramCounts)
-        
-    else:
-        pass
+    # getCandidateDictionary tset case
+    bigram = BigramModel()
+    bigram.trainModel(text)    
+    print("This should just print out the value for 'brown'.\n{}" \
+    .format(bigram.getCandidateDictionary(sentence)))
