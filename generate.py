@@ -11,12 +11,15 @@ from models.unigramModel import *
 from models.bigramModel import *
 from models.trigramModel import *
 
+
 # FIXME Add your team name
 TEAM = 'The Spinners'
 LYRICSDIRS = ['the_beatles']
 TESTLYRICSDIRS = ['the_beatles_test']
 MUSICDIRS = ['gamecube']
 WAVDIR = 'wav/'
+keysig_list = [i for i in KEY_SIGNATURES.keys()]
+KEY_SIG = random.choice(keysig_list)
 
 ###############################################################################
 # Helper Functions
@@ -65,7 +68,6 @@ def printSongLyrics(verseOne, verseTwo, chorus):
 
 def trainLyricModels(lyricDirs, test=False):
     """
-    Requires: lyricDirs is a list of directories in data/lyrics/
     Modifies: nothing
     Effects:  loads data from the folders in the lyricDirs list,
               using the pre-written DataLoader class, then creates an
@@ -115,13 +117,13 @@ def selectNGramModel(models, sentence):
               be used to pick a word for a sentence!)
     """
     if models[0].trainingDataHasNGram(sentence):
+
         # print("returning models[0]")
         return models[0]
     elif models[1].trainingDataHasNGram(sentence):
         # print("returning models[1]")
         return models[1]
     else:
-        # print("returning models[2]")
         return models[2]
 
 def generateLyricalSentence(models, desiredLength):
@@ -139,6 +141,7 @@ def generateLyricalSentence(models, desiredLength):
     """
     sentence = ['^::^', '^:::^']
     currentLength = 0
+
     # print("The models are: {}".format(models))
     while sentenceTooLong(desiredLength, currentLength) == False:
         modelType = selectNGramModel(models, sentence)
@@ -150,6 +153,7 @@ def generateLyricalSentence(models, desiredLength):
             currentLength += 1
             # print(newToken)
     return sentence[2:]
+
 
 def generateMusicalSentence(models, desiredLength, possiblePitches):
     """
@@ -171,7 +175,7 @@ def generateMusicalSentence(models, desiredLength, possiblePitches):
             sentence.append(newToken)
             currentLength += 1
             # print (newToken)
-    return sentence[2:] 
+    return sentence[2:]
 
 def runLyricsGenerator(models):
     """
@@ -183,27 +187,86 @@ def runLyricsGenerator(models):
     verseOne = []
     verseTwo = []
     chorus = []
-
-    for i in range (0, 5):
+    
+    #Generates a repeated phrase to be used in the lyrics
+    repeatedPhrase = generateLyricalSentence(models, 3)
+    
+    #Generates the verses with an ABCB structure
+    for i in range (0, 3):
         verseOne.append(generateLyricalSentence(models, 12))
         verseTwo.append(generateLyricalSentence(models, 12))
+    verseOne.append(verseOne[1])
+    verseTwo.append(verseTwo[1])
+
+    #Generates the chorus with an ABAB structure
+    for i in range (0, 2):
         chorus.append(generateLyricalSentence(models, 12))
+        chorus[i] += repeatedPhrase
+    chorus.append(chorus[0])
+    chorus.append(chorus[1])
+
     printSongLyrics(verseOne, verseTwo, chorus)
 
-def runMusicGenerator(models, songName):
+def runMusicGeneratorBass(models, songName):
+    print("key signature is: {}".format(KEY_SIG))
+    possiblePitches = KEY_SIGNATURES[KEY_SIG]
+    pentatonicScale = possiblePitches[0:2] + possiblePitches[4:5]
+    tuplesList = generateMusicalSentence(models, 50, pentatonicScale)
+    pysynth.make_wav(tuplesList, fn = songName)
+
+def runMusicGeneratorMelody(models, songName):
     """
     Requires: models is a list of trained models
     Modifies: nothing
     Effects:  uses models to generate a song and write it to the file
               named songName.wav
     """
-    keysig_list = [i for i in KEY_SIGNATURES.keys()]
-    key_sig = random.choice(keysig_list)
-    print("key signature is: {}".format(key_sig))
-    possiblePitches = KEY_SIGNATURES[key_sig]
-    tuplesList = generateMusicalSentence(models, 130, possiblePitches)
-    # print("tuplesList: {}".format(tuplesList))
+    print("key signature is: {}".format(KEY_SIG))
+    possiblePitches = KEY_SIGNATURES[KEY_SIG]
+    tuplesList = generateMusicalSentence(models, 50, possiblePitches)
     pysynth.make_wav(tuplesList, fn = songName)
+    
+    """
+    intro = generateMusicalSentence(models, 15, possiblePitches)
+   
+    #Generates verse with structure ABCB
+    verseA = generateMusicalSentence(models, 10, possiblePitches)
+    verseB = generateMusicalSentence(models, 15, possiblePitches)
+    verseC = generateMusicalSentence(models, 10, possiblePitches)
+    verse = verseA + verseB + verseC + verseB
+    '''
+    #print("verseA is: {}".format(verseA))
+    #print("verseB is: {}".format(verseB))
+    #print("verseC is: {}".format(verseC))
+    #print("verse is: {}".format(verse))
+    '''
+   
+    #Generates chorus with structure ABAB
+    chorusA = generateMusicalSentence(models, 15, possiblePitches)
+    chorusB = generateMusicalSentence(models, 15, possiblePitches)
+    chorus = 2 * (chorusA + chorusB)
+    
+    '''
+    print("chorusA is: {}".format(chorusA))
+    print("chorusB is: {}".format(chorusB))
+    print("chorus is: {}".format(chorus))
+    '''
+
+    
+    bridge = generateMusicalSentence(models, 10, possiblePitches)
+    outro = generateMusicalSentence(models, 10, possiblePitches)
+  
+    
+    tuplesList = intro + verse + chorus + verse + chorus + bridge + chorus + outro
+    pysynth.make_wav(tuplesList, fn = songName)
+    #pysynth.make_wav(tuplesList, fn = "tuplesList.wav")
+    
+    '''
+    pysynth.mix_files("pentatonicScale.wav", "tuplesList.wav", songName)
+    # print("tuplesList: {}".format(tuplesList))
+    #pysynth.make_wav(tuplesList, fn = songName)
+    '''
+    """
 
 ###############################################################################
 # Reach
@@ -213,7 +276,7 @@ PROMPT = """
 (1) Generate song lyrics by The Beatles
 (2) Generate a song using data from Nintendo Gamecube
 (3) Quit the music generator
-> """
+"""
 
 def main():
     """
@@ -272,7 +335,12 @@ def main():
                     musicTrained = True
 
                 songName = raw_input('What would you like to name your song? ')
-                runMusicGenerator(musicModels, WAVDIR + songName + '.wav')
+                songNameBass = songName + "_Bass"
+                songNameMelody = songName + "_Melody"
+                runMusicGeneratorMelody(musicModels, WAVDIR + songNameMelody + '.wav')
+                runMusicGeneratorBass(musicModels, WAVDIR + songNameBass + '.wav')
+                pysynth.mix_files(WAVDIR + songNameMelody + '.wav', WAVDIR + songNameBass + '.wav', WAVDIR + songName + '.wav')
+                
                 #print("Under construction")
             elif userInput == 3:
                 print('Thank you for using the ' + TEAM + ' music generator!')
